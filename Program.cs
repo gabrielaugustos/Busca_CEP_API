@@ -1,0 +1,37 @@
+using ViaCepAPI.Integration.Refit;
+using Refit;
+using ViaCepAPI.Integration.Interfaces;
+using ViaCepAPI.Integration;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<ICepIntegration, CepIntegration>();
+
+builder.Services.AddRefitClient<ICepIntegrationRefit>().ConfigureHttpClient(c =>
+{
+    c.BaseAddress = new Uri("https://viacep.com.br");
+});
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
